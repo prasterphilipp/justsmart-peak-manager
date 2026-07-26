@@ -4,7 +4,7 @@ from homeassistant.const import Platform
 
 DOMAIN = "justsmart_peak_manager"
 NAME = "JustSmart Peak Manager"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.NUMBER, Platform.SELECT, Platform.BUTTON]
 
 CONF_GRID_POWER_ENTITY = "grid_power_entity"

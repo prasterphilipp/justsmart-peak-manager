@@ -37,7 +37,7 @@ def manager_entry(**extra):
 def test_frontend_resource_matching_does_not_claim_similarly_named_foreign_urls() -> None:
     assert _is_peak_resource(
         {
-            "url": "/local/justsmart_peak_manager/justsmart-peak-manager-card.js?v=0.1.0"
+            "url": "/local/justsmart_peak_manager/justsmart-peak-manager-card.js?v=0.1.1"
         }
     )
     assert not _is_peak_resource(
@@ -208,7 +208,7 @@ async def test_frontend_install_is_persistent_and_idempotent(hass: HomeAssistant
 
     target = hass.config.path("www/justsmart_peak_manager", "justsmart-peak-manager-card.js")
     assert first_url == second_url
-    assert "?v=0.1.0" in first_url
+    assert "?v=0.1.1" in first_url
     assert "customElements.define" in Path(target).read_text(encoding="utf-8")
 
     resources = await Store(hass, 1, "lovelace_resources").async_load()

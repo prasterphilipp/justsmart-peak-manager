@@ -148,6 +148,57 @@ test("ships a real Lovelace editor that emits updated card configuration", () =>
   assert.equal(editor.lastEvent.detail.config.title, "Neu");
 });
 
+test("supports JustSmart eyebrow aliases and optional visibility", () => {
+  const { registry } = loadCard();
+  const Card = registry.get("justsmart-peak-manager-card");
+  const visible = new Card();
+  visible.setConfig({ eyebrow: "Energiemanagement" });
+  assert.match(visible.shadowRoot.innerHTML, /Energiemanagement/);
+
+  const hidden = new Card();
+  hidden.setConfig({ show_eyebrow: false, eyebrow: "Nicht sichtbar" });
+  assert.doesNotMatch(hidden.shadowRoot.innerHTML, /Nicht sichtbar/);
+  assert.doesNotMatch(hidden.shadowRoot.innerHTML, /class="eyebrow"/);
+
+  const alias = new Card();
+  alias.setConfig({ show_overline: true, overline: "Netzoptimierung" });
+  assert.match(alias.shadowRoot.innerHTML, /Netzoptimierung/);
+});
+
+
+test("supports granular visibility controls without leaving empty sections", () => {
+  const { registry } = loadCard();
+  const Card = registry.get("justsmart-peak-manager-card");
+  const card = new Card();
+  card.setConfig({
+    title: "Ausgeblendeter Titel",
+    show_title: false,
+    show_status_badge: false,
+    show_remaining: false,
+    show_meter: false,
+    show_average: false,
+    show_target: false,
+    show_headroom: false,
+    show_monthly_peak: false,
+    show_status_metric: false,
+    show_action: false,
+  });
+
+  const html = card.shadowRoot.innerHTML;
+  assert.doesNotMatch(html, /class="title"/);
+  assert.doesNotMatch(html, /class="status"/);
+  assert.doesNotMatch(html, /class="timer"/);
+  assert.doesNotMatch(html, /class="meter"/);
+  assert.doesNotMatch(html, /data-value="average"/);
+  assert.doesNotMatch(html, /data-value="target"/);
+  assert.doesNotMatch(html, /data-value="headroom-box"/);
+  assert.doesNotMatch(html, /data-value="monthly"/);
+  assert.doesNotMatch(html, /data-value="status-detail"/);
+  assert.doesNotMatch(html, /class="action"/);
+  assert.match(html, /class="main single"/);
+});
+
+
 test("escapes hostile titles in both card and visual editor", () => {
   const { registry } = loadCard();
   const Card = registry.get("justsmart-peak-manager-card");

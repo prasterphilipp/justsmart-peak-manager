@@ -3,7 +3,7 @@
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, NAME
+from .const import DOMAIN, NAME, VERSION
 
 
 class PeakManagerEntity(CoordinatorEntity):
@@ -17,5 +17,5 @@ class PeakManagerEntity(CoordinatorEntity):
             name=NAME,
             manufacturer="JustSmart",
             model="Peak Manager",
-            sw_version="0.1.0",
+            sw_version=VERSION,
         )

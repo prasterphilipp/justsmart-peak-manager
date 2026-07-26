@@ -38,7 +38,7 @@ Batterie- oder Wechselrichterregister werden bewusst nicht generisch beschrieben
 4. Home Assistant neu starten.
 5. Einstellungen → Geräte & Dienste → Integration hinzufügen → **JustSmart Peak Manager**.
 
-Die Integration kopiert die gebündelte Card nach `/www/justsmart_peak_manager/justsmart-peak-manager-card.js` und registriert automatisch die Ressource `/local/justsmart_peak_manager/justsmart-peak-manager-card.js?v=0.1.0`.
+Die Integration kopiert die gebündelte Card nach `/www/justsmart_peak_manager/justsmart-peak-manager-card.js` und registriert automatisch die Ressource `/local/justsmart_peak_manager/justsmart-peak-manager-card.js?v=0.1.1`.
 
 ### Manuell
 
@@ -80,6 +80,33 @@ grid_options:
   columns: 12
   rows: 5
 ```
+
+### YAML-Anzeigeoptionen
+
+Alle Bereiche bleiben standardmäßig sichtbar. Sie können einzeln ausgeblendet werden:
+
+```yaml
+type: custom:justsmart-peak-manager-card
+title: Netzspitzen Manager
+show_eyebrow: true
+eyebrow: JustSmart Lastmanagement
+show_title: true
+show_status_badge: true
+show_remaining: true
+show_meter: true
+show_average: true
+show_target: true
+show_headroom: true
+show_monthly_peak: true
+show_status_metric: true
+show_action: true
+```
+
+Wie bei den übrigen JustSmart Cards werden für den Eyebrow auch die Aliase
+`show_overline`/`overline` und `show_kicker`/`kicker` akzeptiert. Für die Restzeit
+kann alternativ `show_timer` verwendet werden; `show_status` ist ein Alias für
+`show_status_badge`. Werden alle vier seitlichen Kennzahlen ausgeblendet, nutzt
+die Prognose automatisch die volle Kartenbreite.
 
 Die Card ist für Home-Assistant-Sections optimiert, unterstützt Tastaturfokus und `prefers-reduced-motion` und aktualisiert Livewerte ohne vollständigen Shadow-DOM-Neuaufbau.
 

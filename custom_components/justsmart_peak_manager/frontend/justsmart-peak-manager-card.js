@@ -113,6 +113,18 @@
       return {
         type: "custom:justsmart-peak-manager-card",
         ...DEFAULTS,
+        show_eyebrow: true,
+        eyebrow: "JustSmart Lastmanagement",
+        show_title: true,
+        show_status_badge: true,
+        show_remaining: true,
+        show_meter: true,
+        show_average: true,
+        show_target: true,
+        show_headroom: true,
+        show_monthly_peak: true,
+        show_status_metric: true,
+        show_action: true,
       };
     }
 
@@ -160,6 +172,24 @@
     _entity(key) {
       const entityId = this._config?.[key];
       return entityId ? this._hass?.states?.[entityId] : undefined;
+    }
+
+    _showEyebrow() {
+      const config = this._config || {};
+      return config.show_eyebrow ?? config.show_overline ?? config.show_kicker ?? true;
+    }
+
+    _eyebrowText() {
+      const config = this._config || {};
+      return config.eyebrow ?? config.overline ?? config.kicker ?? "JustSmart Lastmanagement";
+    }
+
+    _shown(key, aliases = []) {
+      const config = this._config || {};
+      for (const option of [key, ...aliases]) {
+        if (config[option] !== undefined) return config[option] !== false;
+      }
+      return true;
     }
 
     _raw(key) {
@@ -244,6 +274,9 @@
       const statusKey = this._statusKey();
       const status = STATUS[statusKey];
       const title = escapeHtml(this._config.title || DEFAULTS.title);
+      const eyebrow = this._showEyebrow()
+        ? `<div class="eyebrow">${escapeHtml(this._eyebrowText())}</div>`
+        : "";
       const projected = escapeHtml(this._formatNumber("projected_entity"));
       const average = escapeHtml(this._formatNumber("average_entity"));
       const target = escapeHtml(this._formatNumber("target_entity"));
@@ -252,6 +285,38 @@
       const remaining = escapeHtml(this._formatRemaining());
       const action = escapeHtml(this._actionText());
       const meter = this._meterPercent().toFixed(1);
+      const titleNode = this._shown("show_title") ? `<h2 class="title">${title}</h2>` : "";
+      const statusBadge = this._shown("show_status_badge", ["show_status"])
+        ? `<div class="status" data-value="status" data-status="${statusKey}" aria-live="polite"><span class="dot" aria-hidden="true"></span><span data-value="status-label">${escapeHtml(status.label)}</span></div>`
+        : "";
+      const header = eyebrow || titleNode || statusBadge
+        ? `<div class="header"><div>${eyebrow}${titleNode}</div>${statusBadge}</div>`
+        : "";
+      const timer = this._shown("show_remaining", ["show_timer"])
+        ? `<div class="timer"><span class="label">Verbleibend</span><strong data-value="remaining">${remaining}</strong></div>`
+        : "";
+      const meterNode = this._shown("show_meter")
+        ? `<div class="meter" role="meter" aria-label="Prognose im Verhältnis zum Ziel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${meter}"><div class="meter-fill" data-value="meter" style="--meter:${meter}%"></div><span class="meter-target" aria-hidden="true"></span></div>`
+        : "";
+      const forecastMetaItems = [
+        this._shown("show_average") ? `<span>Ø aktuell <strong data-value="average">${average}</strong></span>` : "",
+        this._shown("show_target") ? `<span>Ziel <strong data-value="target">${target}</strong></span>` : "",
+      ].filter(Boolean);
+      const forecastMeta = forecastMetaItems.length
+        ? `<div class="forecast-meta">${forecastMetaItems.join("")}</div>`
+        : "";
+      const metrics = [
+        this._shown("show_headroom") ? `<div class="metric" data-value="headroom-box" data-tone="${this._headroomTone()}"><span class="label">Reserve</span><strong data-value="headroom">${headroom}</strong></div>` : "",
+        this._shown("show_monthly_peak") ? `<div class="metric"><span class="label">Monatsspitze</span><strong data-value="monthly">${monthly}</strong></div>` : "",
+        this._shown("show_target") ? `<div class="metric"><span class="label">Ziel</span><strong data-value="target-secondary">${target}</strong></div>` : "",
+        this._shown("show_status_metric") ? `<div class="metric"><span class="label">Status</span><strong data-value="status-detail">${escapeHtml(this._statusMetricText())}</strong></div>` : "",
+      ].filter(Boolean);
+      const side = metrics.length
+        ? `<section class="side" aria-label="Leistungskennzahlen">${metrics.join("")}</section>`
+        : "";
+      const actionNode = this._shown("show_action")
+        ? `<div class="action" aria-live="polite"><span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2 5 14h6l-1 8 8-12h-6l1-8Z"/></svg></span><div class="action-text"><span class="label">Aktive Maßnahme</span><strong data-value="action">${action}</strong></div></div>`
+        : "";
 
       this.shadowRoot.innerHTML = `
         <style>
@@ -259,7 +324,7 @@
           *{box-sizing:border-box}
           ha-card{display:block;position:relative;overflow:hidden;min-height:250px;padding:22px;border:1px solid color-mix(in srgb,var(--primary-text-color,#fff) 10%,transparent);border-radius:24px;background:radial-gradient(circle at 92% 0%,rgba(29,190,184,.17),transparent 34%),linear-gradient(145deg,var(--ha-card-background,var(--card-background-color,#101a24)),color-mix(in srgb,var(--ha-card-background,var(--card-background-color,#101a24)) 88%,#071019));box-shadow:0 18px 45px rgba(0,0,0,.18)}
           .header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}.eyebrow{margin-bottom:5px;color:#54d7cf;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.title{margin:0;font-size:clamp(20px,5cqi,28px);line-height:1.15;letter-spacing:-.025em}.status{display:flex;align-items:center;gap:8px;max-width:48%;padding:8px 11px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.055);font-size:12px;font-weight:750;text-align:right}.dot{width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:#8d9aa5;box-shadow:0 0 0 4px rgba(141,154,165,.12)}.status[data-status="normal"] .dot{background:#47d18c;box-shadow:0 0 0 4px rgba(71,209,140,.13)}.status[data-status="warning"] .dot{background:#ffc857;box-shadow:0 0 0 4px rgba(255,200,87,.13)}.status[data-status="limiting"] .dot{background:#ff6b72;box-shadow:0 0 0 4px rgba(255,107,114,.13)}
-          .main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(180px,.75fr);gap:16px}.forecast,.side{border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(255,255,255,.045)}.forecast{padding:17px}.label{color:var(--secondary-text-color,#a7b2bc);font-size:12px;font-weight:700}.forecast-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}.forecast-value{margin:4px 0 12px;font-size:clamp(34px,9cqi,50px);font-weight:820;line-height:1;letter-spacing:-.045em}.timer{text-align:right}.timer strong{display:block;margin-top:4px;font-size:20px;font-variant-numeric:tabular-nums}.meter{position:relative;height:8px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.1)}.meter-fill{height:100%;width:var(--meter,0%);border-radius:inherit;background:linear-gradient(90deg,#3bc4ba,#ffc857 74%,#ff6b72);transition:width .25s ease}.meter-target{position:absolute;right:0;top:-2px;width:2px;height:12px;background:rgba(255,255,255,.82)}.forecast-meta{display:flex;justify-content:space-between;gap:12px;margin-top:10px;color:var(--secondary-text-color,#a7b2bc);font-size:12px}.forecast-meta strong{color:var(--primary-text-color,#fff)}
+          .main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(180px,.75fr);gap:16px}.main.single{grid-template-columns:1fr}.forecast,.side{border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(255,255,255,.045)}.forecast{padding:17px}.label{color:var(--secondary-text-color,#a7b2bc);font-size:12px;font-weight:700}.forecast-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}.forecast-value{margin:4px 0 12px;font-size:clamp(34px,9cqi,50px);font-weight:820;line-height:1;letter-spacing:-.045em}.timer{text-align:right}.timer strong{display:block;margin-top:4px;font-size:20px;font-variant-numeric:tabular-nums}.meter{position:relative;height:8px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.1)}.meter-fill{height:100%;width:var(--meter,0%);border-radius:inherit;background:linear-gradient(90deg,#3bc4ba,#ffc857 74%,#ff6b72);transition:width .25s ease}.meter-target{position:absolute;right:0;top:-2px;width:2px;height:12px;background:rgba(255,255,255,.82)}.forecast-meta{display:flex;justify-content:space-between;gap:12px;margin-top:10px;color:var(--secondary-text-color,#a7b2bc);font-size:12px}.forecast-meta strong{color:var(--primary-text-color,#fff)}
           .side{display:grid;grid-template-columns:1fr 1fr;overflow:hidden}.metric{min-width:0;padding:15px}.metric:nth-child(odd){border-right:1px solid rgba(255,255,255,.08)}.metric:nth-child(-n+2){border-bottom:1px solid rgba(255,255,255,.08)}.metric strong{display:block;margin-top:6px;overflow:hidden;color:var(--primary-text-color,#fff);font-size:17px;text-overflow:ellipsis;white-space:nowrap}.metric[data-tone="good"] strong{color:#66dda2}.metric[data-tone="warning"] strong{color:#ffd06c}.metric[data-tone="danger"] strong{color:#ff858a}
           .action{display:flex;align-items:center;gap:12px;margin-top:16px;padding:13px 15px;border:1px solid rgba(84,215,207,.18);border-radius:16px;background:rgba(32,167,160,.09)}.action-icon{display:grid;width:34px;height:34px;flex:0 0 auto;place-items:center;border-radius:11px;background:rgba(84,215,207,.14);color:#65ded6}.action svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.8}.action-text{min-width:0}.action-text strong{display:block;margin-top:2px;overflow:hidden;font-size:13px;text-overflow:ellipsis;white-space:nowrap}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
           @container (max-width:580px){ha-card{min-height:220px;padding:17px;border-radius:20px}.header{margin-bottom:14px}.main{grid-template-columns:1fr}.forecast{padding:14px}.side{grid-template-columns:repeat(4,1fr)}.metric{padding:12px 9px}.metric:nth-child(n){border:0;border-right:1px solid rgba(255,255,255,.08)}.metric:last-child{border-right:0}.metric strong{font-size:14px}.action{margin-top:12px}.status{max-width:50%;padding:7px 9px}.forecast-value{font-size:36px}}
@@ -267,24 +332,16 @@
           @media (prefers-reduced-motion:reduce){.meter-fill{transition:none}}
         </style>
         <ha-card role="button" tabindex="0" aria-label="${title}: ${escapeHtml(status.label)}">
-          <div class="header">
-            <div><div class="eyebrow">JustSmart Lastmanagement</div><h2 class="title">${title}</h2></div>
-            <div class="status" data-value="status" data-status="${statusKey}" aria-live="polite"><span class="dot" aria-hidden="true"></span><span data-value="status-label">${escapeHtml(status.label)}</span></div>
-          </div>
-          <div class="main">
+          ${header}
+          <div class="main${side ? "" : " single"}">
             <section class="forecast" aria-label="Intervallprognose">
-              <div class="forecast-row"><div><span class="label">Prognose Intervall</span><div class="forecast-value" data-value="projected">${projected}</div></div><div class="timer"><span class="label">Verbleibend</span><strong data-value="remaining">${remaining}</strong></div></div>
-              <div class="meter" role="meter" aria-label="Prognose im Verhältnis zum Ziel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${meter}"><div class="meter-fill" data-value="meter" style="--meter:${meter}%"></div><span class="meter-target" aria-hidden="true"></span></div>
-              <div class="forecast-meta"><span>Ø aktuell <strong data-value="average">${average}</strong></span><span>Ziel <strong data-value="target">${target}</strong></span></div>
+              <div class="forecast-row"><div><span class="label">Prognose Intervall</span><div class="forecast-value" data-value="projected">${projected}</div></div>${timer}</div>
+              ${meterNode}
+              ${forecastMeta}
             </section>
-            <section class="side" aria-label="Leistungskennzahlen">
-              <div class="metric" data-value="headroom-box" data-tone="${this._headroomTone()}"><span class="label">Reserve</span><strong data-value="headroom">${headroom}</strong></div>
-              <div class="metric"><span class="label">Monatsspitze</span><strong data-value="monthly">${monthly}</strong></div>
-              <div class="metric"><span class="label">Ziel</span><strong data-value="target-secondary">${target}</strong></div>
-              <div class="metric"><span class="label">Status</span><strong data-value="status-detail">${escapeHtml(this._statusMetricText())}</strong></div>
-            </section>
+            ${side}
           </div>
-          <div class="action" aria-live="polite"><span class="action-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2 5 14h6l-1 8 8-12h-6l1-8Z"/></svg></span><div class="action-text"><span class="label">Aktive Maßnahme</span><strong data-value="action">${action}</strong></div></div>
+          ${actionNode}
         </ha-card>`;
       this._bindEvents();
     }
