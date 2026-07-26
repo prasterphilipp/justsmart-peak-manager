@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {"user": {"title": "JustSmart Peak Manager einrichten", "description": "Wähle die aktuelle Netzbezugsleistung. Die Integration berechnet feste Viertelstundenwerte und startet sicher im Monitor-Modus.", "data": {"grid_power_entity": "Netzleistung", "power_polarity": "Vorzeichen des Netzbezugs", "target_kw": "Gewünschte Leistungsspitze", "warning_margin_kw": "Warnabstand", "protect_monthly_peak": "Bereits erreichte Monatsspitze als aktive Grenze verwenden"}}},
+    "abort": {"already_configured": "Dieser Netzleistungssensor ist bereits eingerichtet."}
+  },
+  "options": {
+    "step": {"init": {"title": "Peak Manager konfigurieren", "description": "Automatische Eingriffe erfolgen erst nach Aktivierung des Automatik-Modus. Nur ausdrücklich konfigurierte Geräte werden gesteuert.", "data": {"target_kw": "Zielspitze", "warning_margin_kw": "Warnabstand", "protect_monthly_peak": "Monatsspitze schützen", "wallbox_current_entity": "Wallbox Ladestrom-Limit", "wallbox_switch_entity": "Wallbox Freigabe (optional)", "wallbox_min_a": "Minimaler Ladestrom", "wallbox_max_a": "Maximaler Ladestrom", "wallbox_phases": "Phasen", "voltage": "Spannung", "restore_step_a": "Freigabeschritt", "load_1_entity": "Flexible Last 1", "load_1_power_kw": "Leistung Last 1", "load_1_name": "Name Last 1", "load_2_entity": "Flexible Last 2", "load_2_power_kw": "Leistung Last 2", "load_2_name": "Name Last 2", "load_3_entity": "Flexible Last 3", "load_3_power_kw": "Leistung Last 3", "load_3_name": "Name Last 3"}}},
+    "error": {"invalid_current_range": "Der maximale Ladestrom muss mindestens so groß wie der minimale Ladestrom sein.", "incomplete_load": "Für jede flexible Last werden eine Entität und ihre Nennleistung benötigt.", "invalid_load_power": "Die Leistung einer flexiblen Last muss größer als null sein.", "duplicate_load": "Jede flexible Last darf nur einmal konfiguriert werden."}
+  },
+  "selector": {"power_polarity": {"options": {"import_positive": "Netzbezug ist positiv", "import_negative": "Netzbezug ist negativ"}}},
+  "entity": {
+    "sensor": {
+      "current_import_power": {"name": "Netzbezug aktuell"}, "interval_average_power": {"name": "Viertelstundenmittel"}, "projected_power": {"name": "Viertelstunden-Prognose"}, "active_limit": {"name": "Aktive Grenze"}, "headroom": {"name": "Leistungsspielraum"}, "monthly_peak": {"name": "Monatsspitze"}, "recommended_reduction": {"name": "Empfohlene Reduktion"}, "interval_remaining": {"name": "Verbleibende Intervallzeit"}, "status": {"name": "Status"}, "active_action": {"name": "Aktive Maßnahme"}, "data_quality": {"name": "Datenqualität"}, "interval_start": {"name": "Intervallbeginn"}
+    },
+    "binary_sensor": {"intervention_required": {"name": "Eingriff erforderlich"}},
+    "number": {"peak_limit": {"name": "Zielspitze"}},
+    "select": {"operating_mode": {"name": "Betriebsart", "state": {"monitor": "Monitor", "automatic": "Automatik"}}},
+    "button": {"reset_monthly_peak": {"name": "Monatsspitze zurücksetzen"}}
+  }
+}

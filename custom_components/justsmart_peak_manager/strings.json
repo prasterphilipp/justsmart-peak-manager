@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {"user": {"title": "Set up JustSmart Peak Manager", "description": "Select the live grid import power. The integration calculates clock-aligned quarter-hours and safely starts in monitor mode.", "data": {"grid_power_entity": "Grid power", "power_polarity": "Grid import sign", "target_kw": "Target demand peak", "warning_margin_kw": "Warning margin", "protect_monthly_peak": "Use the reached monthly peak as active limit"}}},
+    "abort": {"already_configured": "Dieser Grid powerssensor ist bereits eingerichtet."}
+  },
+  "options": {
+    "step": {"init": {"title": "Configure Peak Manager", "description": "Automatic actions only occur after automatic mode is enabled. Only explicitly configured devices are controlled.", "data": {"target_kw": "Peak target", "warning_margin_kw": "Warning margin", "protect_monthly_peak": "Protect monthly peak", "wallbox_current_entity": "EV charger current limit", "wallbox_switch_entity": "EV charger enable switch (optional)", "wallbox_min_a": "Minimum charging current", "wallbox_max_a": "Maximum charging current", "wallbox_phases": "Phases", "voltage": "Voltage", "restore_step_a": "Restore step", "load_1_entity": "Flexible load 1", "load_1_power_kw": "Load power 1", "load_1_name": "Load name 1", "load_2_entity": "Flexible load 2", "load_2_power_kw": "Load power 2", "load_2_name": "Load name 2", "load_3_entity": "Flexible load 3", "load_3_power_kw": "Load power 3", "load_3_name": "Load name 3"}}},
+    "error": {"invalid_current_range": "Maximum charging current must be greater than or equal to minimum charging current.", "incomplete_load": "Each flexible load requires both an entity and its rated power.", "invalid_load_power": "Flexible-load power must be greater than zero.", "duplicate_load": "Each flexible-load entity may only be configured once."}
+  },
+  "selector": {"power_polarity": {"options": {"import_positive": "Grid import is positive", "import_negative": "Grid import is negative"}}},
+  "entity": {
+    "sensor": {
+      "current_import_power": {"name": "Current grid import"}, "interval_average_power": {"name": "Quarter-hour average"}, "projected_power": {"name": "Quarter-hour projection"}, "active_limit": {"name": "Active limit"}, "headroom": {"name": "Headroom"}, "monthly_peak": {"name": "Monthly peak"}, "recommended_reduction": {"name": "Recommended reduction"}, "interval_remaining": {"name": "Interval time remaining"}, "status": {"name": "Status"}, "active_action": {"name": "Active action"}, "data_quality": {"name": "Data quality"}, "interval_start": {"name": "Interval start"}
+    },
+    "binary_sensor": {"intervention_required": {"name": "Intervention required"}},
+    "number": {"peak_limit": {"name": "Peak target"}},
+    "select": {"operating_mode": {"name": "Operating mode", "state": {"monitor": "Monitor", "automatic": "Automatic"}}},
+    "button": {"reset_monthly_peak": {"name": "Monthly peak zurücksetzen"}}
+  }
+}

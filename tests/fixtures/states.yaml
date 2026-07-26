@@ -1,0 +1,26 @@
+sensor.peak_projected:
+  state: "4.7"
+  attributes:
+    unit_of_measurement: kW
+sensor.peak_average:
+  state: "3.9"
+  attributes:
+    unit_of_measurement: kW
+number.peak_limit:
+  state: "4.5"
+  attributes:
+    unit_of_measurement: kW
+sensor.peak_headroom:
+  state: "-0.2"
+  attributes:
+    unit_of_measurement: kW
+sensor.peak_monthly:
+  state: "4.3"
+  attributes:
+    unit_of_measurement: kW
+sensor.peak_remaining:
+  state: "522"
+  attributes:
+    unit_of_measurement: s
+sensor.peak_status: limiting
+sensor.peak_action: Wallbox wird auf 11 A reduziert

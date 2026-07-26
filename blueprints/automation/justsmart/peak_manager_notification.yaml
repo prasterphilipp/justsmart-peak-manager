@@ -1,0 +1,24 @@
+blueprint:
+  name: JustSmart Peak Manager – Peak-Warnung
+  description: Sendet eine frei konfigurierbare Benachrichtigung, wenn der Peak Manager einen Eingriff anfordert.
+  domain: automation
+  author: JustSmart
+  input:
+    intervention_sensor:
+      name: Eingriff erforderlich
+      selector:
+        entity:
+          domain: binary_sensor
+          device_class: problem
+    notification_actions:
+      name: Benachrichtigungsaktion
+      description: Zum Beispiel notify.mobile_app oder eine persistente Benachrichtigung.
+      selector:
+        action: {}
+
+mode: single
+trigger:
+  - platform: state
+    entity_id: !input intervention_sensor
+    to: "on"
+action: !input notification_actions

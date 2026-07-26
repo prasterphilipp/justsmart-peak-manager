@@ -1,0 +1,10 @@
+type: custom:justsmart-peak-manager-card
+title: Netzspitzen Manager
+projected_entity: sensor.peak_projected
+average_entity: sensor.peak_average
+target_entity: number.peak_limit
+headroom_entity: sensor.peak_headroom
+monthly_peak_entity: sensor.peak_monthly
+remaining_entity: sensor.peak_remaining
+status_entity: sensor.peak_status
+action_entity: sensor.peak_action
